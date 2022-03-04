@@ -86,28 +86,30 @@ def compute_energy_sharing(atar, entry, spline = defaultspline, pixels_per_plane
     time = data['pixel_time'][entry]
     hits = data['pixel_hits'][entry]
 
-    for v in ['pixel_edep'].array():  
+ 
         
-        for i, hit in enumerate(hits):
-            #Loop over all hits and calculate energy sharing
+    for i, hit in enumerate(hits):
+        #Loop over all hits and calculate energy sharing
 
-            these_energies = []
+        these_energies = []
 
-            places = adjacent_slits(hit, n = 2)
-                    
-            for pos in places:
-                energyi = spline(pos - hit) * edep[i]
-                these_energies.append(energyi)
-            
-            #Normalize the energies to conserve energy
-            these_energies = np.array(these_energies) * (edep[i]/np.sum(these_energies))
+        places = adjacent_slits(hit, n = 2)
+                
+        for pos in places:
+            energyi = spline(pos - hit) * edep[i]
+            these_energies.append(energyi)
+        
+        #Normalize the energies to conserve energy
+        these_energies = np.array(these_energies) * (edep[i]/np.sum(these_energies))
 
-            # print("total Energy", np.sum(these_energies), edep[i])
+        # print("total Energy", np.sum(these_energies), edep[i])
 
-            output['pixel_edep'] += list(these_energies)
-            output['pixel_hits'] += adjacent_slits(hit)
-            output['pixel_time'] += list(np.full_like(these_energies, time[i]))
-            output['pixel_pdg'] += list(np.full_like(these_energies, pdg[i], dtype=int))
+        output['pixel_edep'] += list(these_energies)
+        output['pixel_hits'] += adjacent_slits(hit, n = 2)
+        output['pixel_time'] += list(np.full_like(these_energies, time[i]))
+        output['pixel_pdg'] += list(np.full_like(these_energies, pdg[i], dtype=int))
+
+    return output
 
 def compute_energy_sharing_all(atar, spline = defaultspline, pixels_per_plane = 100, pitch = 200, splinewidth = 600):
 
